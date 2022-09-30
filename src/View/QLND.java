@@ -8,6 +8,7 @@ import Model.NguoiDung;
 import Service.QLNDService;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -27,8 +28,8 @@ public class QLND extends javax.swing.JFrame {
 //     Khoi tao gia tri mac dinh cho defaultTBModel = model cua bang tblListNguoidung
         defaultTBModel = (DefaultTableModel) tblListNguoiDung.getModel();
         
-        // Lay gia tri mac dinh duoc khoi tao trong service
-        listND = service.getListNguoiDung();
+//      Hien thi du lieu len table khi khoi chay man hinh
+//        fillToTable(); 
     }
     
   
@@ -53,7 +54,7 @@ public class QLND extends javax.swing.JFrame {
         txtEmail = new javax.swing.JTextField();
         txtPassword = new javax.swing.JTextField();
         rdoNguoiDung = new javax.swing.JRadioButton();
-        jRadioButton2 = new javax.swing.JRadioButton();
+        rdoAdmin = new javax.swing.JRadioButton();
         chkTrangThai = new javax.swing.JCheckBox();
         jLabel7 = new javax.swing.JLabel();
         cboViTri = new javax.swing.JComboBox<>();
@@ -86,8 +87,8 @@ public class QLND extends javax.swing.JFrame {
         rdoNguoiDung.setSelected(true);
         rdoNguoiDung.setText("Nguoi dung");
 
-        buttonGroup1.add(jRadioButton2);
-        jRadioButton2.setText("Admin");
+        buttonGroup1.add(rdoAdmin);
+        rdoAdmin.setText("Admin");
 
         chkTrangThai.setSelected(true);
         chkTrangThai.setText("Kich hoat");
@@ -115,6 +116,11 @@ public class QLND extends javax.swing.JFrame {
                 return types [columnIndex];
             }
         });
+        tblListNguoiDung.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblListNguoiDungMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(tblListNguoiDung);
 
         btnXuat.setText("Xuat");
@@ -130,10 +136,25 @@ public class QLND extends javax.swing.JFrame {
         });
 
         btnNhap.setText("Nhap");
+        btnNhap.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnNhapActionPerformed(evt);
+            }
+        });
 
         btnSua.setText("Sua");
+        btnSua.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSuaActionPerformed(evt);
+            }
+        });
 
         btnXoa.setText("Xoa");
+        btnXoa.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnXoaActionPerformed(evt);
+            }
+        });
 
         btnSapXep.setText("Sap xep");
 
@@ -170,7 +191,7 @@ public class QLND extends javax.swing.JFrame {
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                 .addComponent(rdoNguoiDung)
                                 .addGap(18, 18, 18)
-                                .addComponent(jRadioButton2)
+                                .addComponent(rdoAdmin)
                                 .addGap(41, 41, 41)
                                 .addComponent(btnXoa))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
@@ -215,7 +236,7 @@ public class QLND extends javax.swing.JFrame {
                     .addComponent(jLabel5)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(rdoNguoiDung)
-                        .addComponent(jRadioButton2)
+                        .addComponent(rdoAdmin)
                         .addComponent(btnXoa)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -245,19 +266,132 @@ public class QLND extends javax.swing.JFrame {
 
     private void btnXuatMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnXuatMouseClicked
         // TODO add your handling code here:
-       
         fillToTable();
     }//GEN-LAST:event_btnXuatMouseClicked
-    
+
+    private void btnNhapActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNhapActionPerformed
+        // TODO add your handling code here:
+        NguoiDung nd = getDataFromFom();        
+//        NguoiDung nd1 = new NguoiDung(txtUserName.getText(), 
+//                txtEmail.getText(), txtPassword.getText(), 
+//                rdoNguoiDung.isSelected() ? 1 : 2, chkTrangThai.isSelected(),
+//                cboViTri.getSelectedItem().toString());
+//        Neu gia tri nhap vao hop le
+
+        if (validate(nd))  {
+//            Them du lieu vao danh sach
+            service.add(nd);
+//            Do du lieu len bang
+            fillToTable();
+        }
+    }//GEN-LAST:event_btnNhapActionPerformed
+
+    private void tblListNguoiDungMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblListNguoiDungMouseClicked
+        // TODO add your handling code here:
+        int indexRow = tblListNguoiDung.getSelectedRow();
+        
+        System.out.println(indexRow);
+        // Lay doi tuong NguoiDung thong qua index
+        NguoiDung nd = listND.get(indexRow);
+        // Do du lieu thuoc tinh cua nguoi dung tuong ung voi cac control
+        txtUserName.setText(nd.getUserName());
+        txtEmail.setText(nd.getEmail());
+        txtPassword.setText(nd.getPassword());
+        
+        if (nd.getRole() ==1) {
+            rdoNguoiDung.setSelected(true);
+        } else {
+            rdoAdmin.setSelected(true);
+        }
+        
+        chkTrangThai.setSelected(nd.isStatus());
+        
+        cboViTri.setSelectedItem(nd.getVitri());
+    }//GEN-LAST:event_tblListNguoiDungMouseClicked
+
+    private void btnSuaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSuaActionPerformed
+        // TODO add your handling code here:
+        int rowIndex = tblListNguoiDung.getSelectedRow();
+        if (rowIndex >= 0) {
+            // Thuc hien sua
+               NguoiDung nd = getDataFromFom();        
+               if (validate(nd)) {
+                   service.update(rowIndex, nd);
+                   // do lai du lieu danh sach moi
+                   fillToTable();
+               } 
+        } else {
+            JOptionPane.showMessageDialog(this, "Phai chon doi tuong can sua");
+        }
+        
+    }//GEN-LAST:event_btnSuaActionPerformed
+
+    private void btnXoaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnXoaActionPerformed
+        // TODO add your handling code here:
+        int rowIndex = tblListNguoiDung.getSelectedRow();
+        if (rowIndex >= 0) {
+            // 0: yes - 1: no - 2:cancel
+           int confirm = JOptionPane.showConfirmDialog(this, "Ban co chac chan muon xoa khong");
+           if (confirm == 0) {
+               // xoa doi tuong
+               service.delete(rowIndex);
+               // do du lieu danh sach moi len JTable
+               fillToTable();
+           }
+        } else {
+            JOptionPane.showMessageDialog(this, "Phai chon doi tuong can xoa");
+        }
+    }//GEN-LAST:event_btnXoaActionPerformed
+    private NguoiDung getDataFromFom() {
+          NguoiDung nd = new NguoiDung();
+        
+//     Lay gia tri tu txtUserName.getText gan cho thuoc tinh userName cua doi tuong
+        nd.setUserName(txtUserName.getText());
+        //     Lay gia tri tu txtEmail.getText gan cho thuoc tinh email cua doi tuong
+        nd.setEmail(txtEmail.getText());       
+        //     Lay gia tri tu txtPassword.getText gan cho thuoc tinh password cua doi tuong
+        nd.setPassword(txtPassword.getText());
+        // C1
+//        if (rdoNguoiDung.isSelected()) {
+//            nd.setRole(1);
+//        } else {
+//            nd.setRole(2);
+//        } 
+//        C2:
+        nd.setRole(rdoNguoiDung.isSelected() ? 1: 2);
+        nd.setStatus(chkTrangThai.isSelected());
+//        Lay gia tri duoc chon tu cboVitri
+        nd.setVitri(cboViTri.getSelectedItem().toString());
+        
+        return nd;
+    }
       // Do du lieu list vao danh sach
     private void fillToTable() {
         // Xoa dong mac dinh
-        defaultTBModel.setRowCount(0);
+        defaultTBModel.setRowCount(0); 
+        // Lay gia tri mac dinh duoc khoi tao trong service
+        listND = service.getListNguoiDung();
+        
         for(NguoiDung nd : listND) {
             defaultTBModel.addRow(new Object[] {nd.getUserName(), nd.getEmail(), nd.getPassword(),
                                                 nd.getRole() == 1? "User" : "Admin" , nd.getVitri(), nd.isStatus()});
         }
     }
+    
+    private boolean validate(NguoiDung nguoiDung) {
+        if (nguoiDung.getUserName().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "User name khong duoc de trong");
+            return false;
+        } else if (nguoiDung.getEmail().trim().isEmpty()) {
+             JOptionPane.showMessageDialog(this, "Email khong duoc de trong");
+            return false;           
+        } else if (nguoiDung.getPassword().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Password khong duoc de trong");
+            return false;           
+        }
+        return true;
+    }
+    
     /**
      * @param args the command line arguments
      */
@@ -310,8 +444,8 @@ public class QLND extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
-    private javax.swing.JRadioButton jRadioButton2;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JRadioButton rdoAdmin;
     private javax.swing.JRadioButton rdoNguoiDung;
     private javax.swing.JTable tblListNguoiDung;
     private javax.swing.JTextField txtEmail;

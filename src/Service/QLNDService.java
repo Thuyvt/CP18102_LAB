@@ -31,5 +31,16 @@ public class QLNDService {
     public List<NguoiDung> getListNguoiDung () {
         return listNguoiDung;
     }
-        
+    
+    public void add(NguoiDung nd) {
+        listNguoiDung.add(nd);
+    }
+     
+    public void update(int index, NguoiDung nd) {
+        listNguoiDung.set(index, nd);
+    }
+    
+    public void delete(int index) {
+        listNguoiDung.remove(index);
+    }
 }
